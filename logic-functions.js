@@ -1,3 +1,5 @@
+import { initMap, getUserLocation, getMapInstance } from "./geolocator.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   // --- DOM ELEMENTS ---
   const mapElement = document.getElementById("map");
@@ -14,12 +16,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const addCardBtn = document.getElementById("add-card-btn");
   const modalCardList = document.getElementById("modal-card-list");
 
-  // --- STATE & DATA ---
-  let map;
-  let userMarker;
+  // --- STATE ---
   let userCards = [];
 
-  // Pre-defined database of available credit cards and their reward structures.
+  // Card database
   const ALL_CARDS_DATABASE = {
     "chase-sapphire-preferred": {
       name: "Chase Sapphire Preferred",
@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
-  // Simulation: Map of business names to categories
+  // Simulation of MCC categories
   const BUSINESS_TO_CATEGORY_MAP = {
     starbucks: "dining",
     "mcdonald's": "dining",
@@ -70,75 +70,28 @@ document.addEventListener("DOMContentLoaded", () => {
     meijer: "groceries",
   };
 
-  // Initialize Leaflet map
-  const initMap = (lat, lon) => {
-    if (typeof L === "undefined") {
-      showError("Map library failed to load. Please check your connection.");
-      findCardBtn.disabled = true;
-      findCardBtn.textContent = "Map Unavailable";
-      document.getElementById("map-container").style.display = "none";
-      return;
-    }
-
-    if (map) return;
-    map = L.map(mapElement).setView([lat, lon], 16);
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      maxZoom: 19,
-    }).addTo(map);
-    userMarker = L.marker([lat, lon]).addTo(map).bindPopup("You are here!");
-  };
-
-  // Show error
-  const showError = (message) => {
-    errorMessageEl.textContent = message;
+  // --- HELPERS ---
+  const showError = (msg) => {
+    errorMessageEl.textContent = msg;
     errorMessageEl.classList.remove("hidden");
     recommendationArea.classList.add("hidden");
   };
+  const clearError = () => errorMessageEl.classList.add("hidden");
 
-  // Hide error
-  const clearError = () => {
-    errorMessageEl.classList.add("hidden");
-  };
-
-  // Get user's location
-  const getUserLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          initMap(latitude, longitude);
-        },
-        () => {
-          showError("Location denied. Using sample location.");
-          initMap(42.2808, -83.743); // Ann Arbor
-        }
-      );
-    } else {
-      showError("Geolocation not supported.");
-      initMap(42.2808, -83.743);
-    }
-  };
-
-  // LocalStorage helpers
-  const saveCards = () => {
+  const saveCards = () =>
     localStorage.setItem("userCreditCards", JSON.stringify(userCards));
-  };
   const loadCards = () => {
     const saved = localStorage.getItem("userCreditCards");
-    if (saved) {
-      userCards = JSON.parse(saved);
-    } else {
-      userCards = ["chase-sapphire-preferred", "amex-blue-cash-everyday"];
-      saveCards();
-    }
+    userCards = saved
+      ? JSON.parse(saved)
+      : ["chase-sapphire-preferred", "amex-blue-cash-everyday"];
+    saveCards();
   };
 
-  // Render wallet
   const renderWalletCards = () => {
     walletCardsEl.innerHTML = "";
     if (userCards.length === 0) {
-      walletCardsEl.innerHTML =
-        '<p class="text-center text-gray-500">Your wallet is empty.</p>';
+      walletCardsEl.innerHTML = `<p class="text-center text-gray-500">Your wallet is empty.</p>`;
       return;
     }
     userCards.forEach((id) => {
@@ -152,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   };
 
-  // Render modal
   const renderModal = () => {
     addCardSelect.innerHTML = "";
     Object.entries(ALL_CARDS_DATABASE).forEach(([id, card]) => {
@@ -171,16 +123,16 @@ document.addEventListener("DOMContentLoaded", () => {
       div.className =
         "flex justify-between items-center bg-gray-100 p-2 rounded-lg";
       div.innerHTML = `
-          <span>${card.name}</span>
-          <button data-card-id="${id}" class="remove-card-btn bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full hover:bg-red-600">&times;</button>
-        `;
+        <span>${card.name}</span>
+        <button data-card-id="${id}" class="remove-card-btn bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full hover:bg-red-600">&times;</button>
+      `;
       modalCardList.appendChild(div);
     });
   };
 
-  // Find best card
   const findBestCard = async () => {
     clearError();
+    const map = getMapInstance();
     if (!map) {
       showError("Map not ready yet.");
       return;
@@ -199,23 +151,14 @@ document.addEventListener("DOMContentLoaded", () => {
     );
     const data = await res.json();
 
-    if (!data || !data.display_name) {
-      showError("Could not identify your location.");
-      findCardBtn.disabled = false;
-      findCardBtn.textContent = "Analyze My Location";
-      return;
-    }
-
     const placeName =
-      data.address.amenity ||
-      data.address.shop ||
-      data.address.tourism ||
+      data?.address?.amenity ||
+      data?.address?.shop ||
+      data?.address?.tourism ||
       "a place";
-    const lower = placeName.toLowerCase();
-
     let category = "default";
     for (const [key, value] of Object.entries(BUSINESS_TO_CATEGORY_MAP)) {
-      if (lower.includes(key)) {
+      if (placeName.toLowerCase().includes(key)) {
         category = value;
         break;
       }
@@ -246,9 +189,9 @@ document.addEventListener("DOMContentLoaded", () => {
     renderModal();
     walletModal.classList.remove("hidden");
   });
-  closeModalBtn.addEventListener("click", () => {
-    walletModal.classList.add("hidden");
-  });
+  closeModalBtn.addEventListener("click", () =>
+    walletModal.classList.add("hidden")
+  );
   addCardBtn.addEventListener("click", () => {
     const id = addCardSelect.value;
     if (id && !userCards.includes(id)) {
@@ -268,8 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  // Init
+  // --- INIT ---
   loadCards();
   renderWalletCards();
-  getUserLocation();
+  getUserLocation(mapElement, showError);
 });
