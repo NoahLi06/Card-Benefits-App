@@ -47,6 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Discover it Cash Back",
       rewards: { groceries: 5, dining: 5, default: 1 }, // Note: simplified rotating categories
     },
+    "chase-freedom-unlimited": {
+      name: "Chase Freedom Unlimited",
+      rewards: { groceries: 1.5, dining: 3, default: 1.5 },
+    },
   };
 
   // SIMULATION: A simple map of business names to categories.
@@ -71,6 +75,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Initialize the Leaflet map
   const initMap = (lat, lon) => {
+    // Add a check to ensure the Leaflet library (L) has loaded. This is a common
+    // point of failure if there's a network issue, which can stop the script
+    // and prevent buttons from working.
+    if (typeof L === "undefined") {
+      showError(
+        "Map library failed to load. Please check your internet connection."
+      );
+      findCardBtn.disabled = true;
+      findCardBtn.textContent = "Map Unavailable";
+      const mapContainer = document.getElementById("map-container");
+      if (mapContainer) mapContainer.style.display = "none";
+      return;
+    }
+
     if (map) return; // Don't re-initialize
     map = L.map(mapElement).setView([lat, lon], 16);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
