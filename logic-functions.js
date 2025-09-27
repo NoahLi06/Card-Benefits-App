@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     "citi-custom-cash": {
       name: "Citi Custom Cash",
-      rewards: { dining: 5, groceries: 5, gas: 5, travel: 5, default: 1 }, // Note: simplified rule
+      rewards: { dining: 5, groceries: 5, gas: 5, travel: 5, default: 1 },
     },
     "capital-one-savorone": {
       name: "Capital One SavorOne",
@@ -45,7 +45,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
     "discover-it-cash-back": {
       name: "Discover it Cash Back",
-      rewards: { groceries: 5, dining: 5, default: 1 }, // Note: simplified rotating categories
+      rewards: { groceries: 5, dining: 5, default: 1 },
     },
     "chase-freedom-unlimited": {
       name: "Chase Freedom Unlimited",
@@ -53,8 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
     },
   };
 
-  // SIMULATION: A simple map of business names to categories.
-  // A real app would use a Merchant Category Code (MCC) API.
+  // Simulation: Map of business names to categories
   const BUSINESS_TO_CATEGORY_MAP = {
     starbucks: "dining",
     "mcdonald's": "dining",
@@ -71,25 +70,17 @@ document.addEventListener("DOMContentLoaded", () => {
     meijer: "groceries",
   };
 
-  // --- FUNCTIONS ---
-
-  // Initialize the Leaflet map
+  // Initialize Leaflet map
   const initMap = (lat, lon) => {
-    // Add a check to ensure the Leaflet library (L) has loaded. This is a common
-    // point of failure if there's a network issue, which can stop the script
-    // and prevent buttons from working.
     if (typeof L === "undefined") {
-      showError(
-        "Map library failed to load. Please check your internet connection."
-      );
+      showError("Map library failed to load. Please check your connection.");
       findCardBtn.disabled = true;
       findCardBtn.textContent = "Map Unavailable";
-      const mapContainer = document.getElementById("map-container");
-      if (mapContainer) mapContainer.style.display = "none";
+      document.getElementById("map-container").style.display = "none";
       return;
     }
 
-    if (map) return; // Don't re-initialize
+    if (map) return;
     map = L.map(mapElement).setView([lat, lon], 16);
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
       maxZoom: 19,
@@ -97,14 +88,14 @@ document.addEventListener("DOMContentLoaded", () => {
     userMarker = L.marker([lat, lon]).addTo(map).bindPopup("You are here!");
   };
 
-  // Show a generic error message
+  // Show error
   const showError = (message) => {
     errorMessageEl.textContent = message;
     errorMessageEl.classList.remove("hidden");
     recommendationArea.classList.add("hidden");
   };
 
-  // Hide error messages
+  // Hide error
   const clearError = () => {
     errorMessageEl.classList.add("hidden");
   };
@@ -118,37 +109,31 @@ document.addEventListener("DOMContentLoaded", () => {
           initMap(latitude, longitude);
         },
         () => {
-          showError(
-            "Location access denied. Please enable it in your browser settings."
-          );
-          // Default to a sample location if denied
-          initMap(42.2808, -83.743); // Ann Arbor, MI
+          showError("Location denied. Using sample location.");
+          initMap(42.2808, -83.743); // Ann Arbor
         }
       );
     } else {
-      showError("Geolocation is not supported by this browser.");
-      initMap(42.2808, -83.743); // Ann Arbor, MI
+      showError("Geolocation not supported.");
+      initMap(42.2808, -83.743);
     }
   };
 
-  // Save user's cards to localStorage
+  // LocalStorage helpers
   const saveCards = () => {
     localStorage.setItem("userCreditCards", JSON.stringify(userCards));
   };
-
-  // Load user's cards from localStorage
   const loadCards = () => {
-    const savedCards = localStorage.getItem("userCreditCards");
-    if (savedCards) {
-      userCards = JSON.parse(savedCards);
+    const saved = localStorage.getItem("userCreditCards");
+    if (saved) {
+      userCards = JSON.parse(saved);
     } else {
-      // Default cards for new users
       userCards = ["chase-sapphire-preferred", "amex-blue-cash-everyday"];
       saveCards();
     }
   };
 
-  // Render the cards in the main wallet view
+  // Render wallet
   const renderWalletCards = () => {
     walletCardsEl.innerHTML = "";
     if (userCards.length === 0) {
@@ -156,23 +141,21 @@ document.addEventListener("DOMContentLoaded", () => {
         '<p class="text-center text-gray-500">Your wallet is empty.</p>';
       return;
     }
-    userCards.forEach((cardId) => {
-      const card = ALL_CARDS_DATABASE[cardId];
+    userCards.forEach((id) => {
+      const card = ALL_CARDS_DATABASE[id];
       if (card) {
-        const cardEl = document.createElement("div");
-        cardEl.className = "bg-gray-100 p-2 rounded-lg text-center";
-        cardEl.textContent = card.name;
-        walletCardsEl.appendChild(cardEl);
+        const div = document.createElement("div");
+        div.className = "bg-gray-100 p-2 rounded-lg text-center";
+        div.textContent = card.name;
+        walletCardsEl.appendChild(div);
       }
     });
   };
 
-  // Render cards and controls in the management modal
+  // Render modal
   const renderModal = () => {
-    // Populate dropdown
     addCardSelect.innerHTML = "";
     Object.entries(ALL_CARDS_DATABASE).forEach(([id, card]) => {
-      // Only show cards that are not already in the user's wallet
       if (!userCards.includes(id)) {
         const option = document.createElement("option");
         option.value = id;
@@ -181,31 +164,29 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Populate list of cards to remove
     modalCardList.innerHTML = "";
-    userCards.forEach((cardId) => {
-      const card = ALL_CARDS_DATABASE[cardId];
-      const cardEl = document.createElement("div");
-      cardEl.className =
+    userCards.forEach((id) => {
+      const card = ALL_CARDS_DATABASE[id];
+      const div = document.createElement("div");
+      div.className =
         "flex justify-between items-center bg-gray-100 p-2 rounded-lg";
-      cardEl.innerHTML = `
-                <span>${card.name}</span>
-                <button data-card-id="${cardId}" class="remove-card-btn bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full hover:bg-red-600">&times;</button>
-            `;
-      modalCardList.appendChild(cardEl);
+      div.innerHTML = `
+          <span>${card.name}</span>
+          <button data-card-id="${id}" class="remove-card-btn bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full hover:bg-red-600">&times;</button>
+        `;
+      modalCardList.appendChild(div);
     });
   };
 
-  // The main logic for finding the best card
+  // Find best card
   const findBestCard = async () => {
     clearError();
     if (!map) {
-      showError("Map is not initialized yet.");
+      showError("Map not ready yet.");
       return;
     }
-
     if (userCards.length === 0) {
-      showError("You have no cards in your wallet. Please add one first.");
+      showError("Add a card to your wallet first.");
       return;
     }
 
@@ -213,12 +194,10 @@ document.addEventListener("DOMContentLoaded", () => {
     findCardBtn.textContent = "Analyzing...";
 
     const { lat, lng } = map.getCenter();
-
-    // Use Nominatim Reverse Geocoding API (free, no key required)
-    const response = await fetch(
+    const res = await fetch(
       `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`
     );
-    const data = await response.json();
+    const data = await res.json();
 
     if (!data || !data.display_name) {
       showError("Could not identify your location.");
@@ -231,24 +210,21 @@ document.addEventListener("DOMContentLoaded", () => {
       data.address.amenity ||
       data.address.shop ||
       data.address.tourism ||
-      "an unknown place";
-    const placeNameLower = placeName.toLowerCase();
+      "a place";
+    const lower = placeName.toLowerCase();
 
-    // Find category from our simulated map
     let category = "default";
     for (const [key, value] of Object.entries(BUSINESS_TO_CATEGORY_MAP)) {
-      if (placeNameLower.includes(key)) {
+      if (lower.includes(key)) {
         category = value;
         break;
       }
     }
 
-    // Find the best card
     let bestCard = null;
     let maxReward = -1;
-
-    userCards.forEach((cardId) => {
-      const card = ALL_CARDS_DATABASE[cardId];
+    userCards.forEach((id) => {
+      const card = ALL_CARDS_DATABASE[id];
       const reward = card.rewards[category] || card.rewards.default;
       if (reward > maxReward) {
         maxReward = reward;
@@ -256,7 +232,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     });
 
-    // Display result
     locationNameEl.textContent = placeName;
     cardRecommendationEl.textContent = `${bestCard} for ${maxReward}% back!`;
     recommendationArea.classList.remove("hidden");
@@ -267,37 +242,33 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // --- EVENT LISTENERS ---
   findCardBtn.addEventListener("click", findBestCard);
-
   manageWalletBtn.addEventListener("click", () => {
     renderModal();
     walletModal.classList.remove("hidden");
   });
-
   closeModalBtn.addEventListener("click", () => {
     walletModal.classList.add("hidden");
   });
-
   addCardBtn.addEventListener("click", () => {
-    const selectedCardId = addCardSelect.value;
-    if (selectedCardId && !userCards.includes(selectedCardId)) {
-      userCards.push(selectedCardId);
+    const id = addCardSelect.value;
+    if (id && !userCards.includes(id)) {
+      userCards.push(id);
       saveCards();
       renderWalletCards();
-      renderModal(); // Re-render modal to update dropdown and list
+      renderModal();
     }
   });
-
   modalCardList.addEventListener("click", (e) => {
     if (e.target.classList.contains("remove-card-btn")) {
-      const cardIdToRemove = e.target.dataset.cardId;
-      userCards = userCards.filter((id) => id !== cardIdToRemove);
+      const id = e.target.dataset.cardId;
+      userCards = userCards.filter((c) => c !== id);
       saveCards();
       renderWalletCards();
       renderModal();
     }
   });
 
-  // --- INITIALIZATION CALLS ---
+  // Init
   loadCards();
   renderWalletCards();
   getUserLocation();
