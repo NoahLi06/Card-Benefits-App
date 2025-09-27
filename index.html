@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Geo-Reward Maximizer</title>
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Leaflet Map Library -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -20,114 +18,149 @@
       crossorigin=""
     ></script>
 
-    <!-- Google Fonts: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="styles.css" />
+    <style>
+      /* Define our color palette */
+      :root {
+        --dark-green: #0f380f;
+        --light-green: #9bbc0f;
+        --pixel-border-color: #306230;
+      }
+      
+      /* Apply the font and base colors to the whole page */
+      body {
+        font-family: 'Press Start 2P', cursive;
+        background-color: var(--dark-green);
+        color: var(--light-green);
+        image-rendering: pixelated; /* Ensures images look sharp and pixely */
+      }
+
+      /* Style for the main game container */
+      .game-container {
+        background-color: var(--dark-green);
+        border: 4px solid var(--pixel-border-color);
+        box-shadow: inset 0 0 0 4px var(--dark-green);
+      }
+      
+      /* General styles for all buttons to make them look pixelated */
+      .pixel-button {
+        border-radius: 0 !important; /* Sharp corners */
+        border: 4px solid var(--pixel-border-color);
+        text-transform: uppercase;
+        box-shadow: inset 0 0 0 0 var(--dark-green);
+        transition: all 0.1s ease-in-out;
+      }
+
+      .pixel-button:hover, .pixel-button:focus {
+        background-color: var(--pixel-border-color) !important;
+        color: var(--dark-green) !important;
+      }
+      .pixel-button:active {
+        box-shadow: inset 4px 4px 0 0 var(--dark-green);
+      }
+
+      /* Styles for text inputs and select dropdowns */
+      .pixel-input {
+        background-color: var(--dark-green);
+        border: 4px solid var(--pixel-border-color);
+        border-radius: 0;
+        color: var(--light-green);
+      }
+      .pixel-input:focus {
+          outline: none;
+          border-color: var(--light-green);
+      }
+
+      /* Custom border for other elements */
+       .pixel-border {
+         border: 4px solid var(--pixel-border-color);
+         background-color: var(--dark-green);
+       }
+    </style>
   </head>
-  <body
-    class="bg-gray-100 text-gray-800 flex flex-col items-center justify-center min-h-screen p-4"
-  >
+  <body class="flex flex-col items-center justify-center min-h-screen p-4">
     <div
-      class="w-full max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6 space-y-6"
+      class="game-container w-full max-w-md mx-auto p-4 space-y-4"
     >
-      <!-- Header -->
-      <div class="text-center">
-        <h1 class="text-2xl font-bold text-gray-900">Geo-Reward Maximizer</h1>
-        <p class="text-gray-500 mt-1">Find the best card for any location.</p>
+      <div class="text-center pb-2">
+        <h1 class="text-xl">GEO-REWARD MAXIMIZER</h1>
       </div>
 
-      <!-- Map Container -->
-      <div id="map-container" class="bg-gray-200 rounded-lg">
-        <div id="map"></div>
+      <div id="map-container" class="pixel-border p-1">
+        <div id="map" class="h-64"></div>
       </div>
 
-      <!-- Action Button -->
       <button
         id="find-card-btn"
-        class="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-300 shadow-md"
+        class="pixel-button w-full bg-transparent text-white font-semibold py-3"
       >
-        Analyze My Location
+        Analyze Location
       </button>
 
-      <!-- Recommendation Area -->
       <div
         id="recommendation-area"
-        class="hidden text-center bg-gray-50 p-4 rounded-lg border border-gray-200"
+        class="hidden text-center pixel-border p-4 space-y-2"
       >
-        <p class="text-gray-600">You appear to be near:</p>
-        <p id="location-name" class="text-xl font-bold text-blue-800"></p>
-        <p class="mt-2 text-gray-600">The best card to use is:</p>
-        <p
-          id="card-recommendation"
-          class="text-lg font-semibold text-green-600"
-        ></p>
+        <p>Location:</p>
+        <p id="location-name" class="text-lg"></p>
+        <p class="mt-2">Use Card:</p>
+        <p id="card-recommendation" class="text-lg"></p>
       </div>
 
       <div
         id="error-message"
-        class="hidden text-center bg-red-50 p-4 rounded-lg border border-red-200 text-red-700"
+        class="hidden text-center pixel-border p-4 text-red-400"
       ></div>
 
-      <!-- Wallet Management -->
       <div>
-        <h2 class="text-lg font-semibold text-center mb-3">My Wallet</h2>
+        <h2 class="text-lg text-center mb-2">Wallet</h2>
         <div id="wallet-cards" class="space-y-2">
-          <!-- User's cards will be listed here -->
-        </div>
+          </div>
         <button
           id="manage-wallet-btn"
-          class="w-full mt-4 bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition duration-300"
+          class="pixel-button w-full mt-4 bg-transparent text-white font-semibold py-2"
         >
           Manage Wallet
         </button>
       </div>
     </div>
 
-    <!-- Wallet Management Modal -->
     <div
       id="wallet-modal"
-      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+      class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4"
     >
-      <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md space-y-4">
-        <h2 class="text-xl font-bold">Manage Your Cards</h2>
-        <p class="text-sm text-gray-500">
-          Add or remove cards from your wallet. Your data is saved in your
-          browser.
-        </p>
-        <div id="modal-card-list" class="space-y-2 max-h-60 overflow-y-auto">
-          <!-- Cards for management appear here -->
-        </div>
+      <div class="game-container p-6 w-full max-w-md space-y-4">
+        <h2 class="text-xl font-bold">Manage Cards</h2>
+        <div id="modal-card-list" class="space-y-2 max-h-60 overflow-y-auto p-2">
+          </div>
         <div>
           <select
             id="add-card-select"
-            class="w-full p-2 border border-gray-300 rounded-lg"
+            class="pixel-input w-full p-2"
           >
-            <!-- Options populated by JS -->
-          </select>
+            </select>
           <button
             id="add-card-btn"
-            class="w-full mt-2 bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700"
+            class="pixel-button w-full mt-2 bg-transparent text-white py-2"
           >
             Add Card
           </button>
         </div>
         <button
           id="close-modal-btn"
-          class="w-full mt-4 bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300"
+          class="pixel-button w-full mt-4 bg-transparent text-white py-2"
         >
           Done
         </button>
       </div>
     </div>
 
-    <!-- Link to the external JavaScript file -->
     <script src="app.js" defer></script>
   </body>
 </html>
