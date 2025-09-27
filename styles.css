@@ -1,0 +1,14 @@
+body {
+  font-family: "Inter", sans-serif;
+}
+
+#map {
+  height: 300px;
+  border-radius: 0.5rem;
+}
+
+/* Hide Leaflet default UI controls for demo */
+.leaflet-control-attribution,
+.leaflet-control-zoom {
+  display: none;
+}
