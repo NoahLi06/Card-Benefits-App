@@ -85,82 +85,42 @@
     </style>
   </head>
   <body class="flex flex-col items-center justify-center min-h-screen p-4">
-    <div
-      class="game-container w-full max-w-md mx-auto p-4 space-y-4"
-    >
+    <div class="game-container w-full max-w-md mx-auto p-4 space-y-4">
       <div class="text-center pb-2">
-        <h1 class="text-xl">GEO-REWARD MAXIMIZER</h1>
+        <h1 class="text-xl">ECO-CATCHER</h1>
       </div>
-
       <div id="map-container" class="pixel-border p-1">
         <div id="map" class="h-64"></div>
       </div>
-
-      <button
-        id="find-card-btn"
-        class="pixel-button w-full bg-transparent text-white font-semibold py-3"
-      >
-        Analyze Location
-      </button>
-
-      <div
-        id="recommendation-area"
-        class="hidden text-center pixel-border p-4 space-y-2"
-      >
-        <p>Location:</p>
+      <div id="location-info-area" class="hidden text-center pixel-border p-4 space-y-2">
+        <p>Location Found:</p>
         <p id="location-name" class="text-lg"></p>
-        <p class="mt-2">Use Card:</p>
-        <p id="card-recommendation" class="text-lg"></p>
       </div>
-
-      <div
-        id="error-message"
-        class="hidden text-center pixel-border p-4 text-red-400"
-      ></div>
-
+      <button id="capture-deal-btn" class="pixel-button w-full bg-transparent text-white font-semibold py-3">
+        Capture Deal
+      </button>
+      <div id="error-message" class="hidden text-center pixel-border p-4 text-red-400"></div>
       <div>
-        <h2 class="text-lg text-center mb-2">Wallet</h2>
-        <div id="wallet-cards" class="space-y-2">
-          </div>
-        <button
-          id="manage-wallet-btn"
-          class="pixel-button w-full mt-4 bg-transparent text-white font-semibold py-2"
-        >
-          Manage Wallet
-        </button>
-      </div>
-    </div>
-
-    <div
-      id="wallet-modal"
-      class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4"
-    >
-      <div class="game-container p-6 w-full max-w-md space-y-4">
-        <h2 class="text-xl font-bold">Manage Cards</h2>
-        <div id="modal-card-list" class="space-y-2 max-h-60 overflow-y-auto p-2">
-          </div>
-        <div>
-          <select
-            id="add-card-select"
-            class="pixel-input w-full p-2"
-          >
-            </select>
-          <button
-            id="add-card-btn"
-            class="pixel-button w-full mt-2 bg-transparent text-white py-2"
-          >
-            Add Card
-          </button>
+        <div class="flex justify-between items-center mb-2">
+            <h2 class="text-lg">Cardballs</h2>
+            <button id="manage-wallet-btn" class="text-sm underline">Manage</button>
         </div>
-        <button
-          id="close-modal-btn"
-          class="pixel-button w-full mt-4 bg-transparent text-white py-2"
-        >
-          Done
-        </button>
+        <div id="wallet-cards" class="space-y-2"></div>
       </div>
     </div>
 
-    <script src="app.js" defer></script>
-  </body>
+    <div id="wallet-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4">
+      <div class="game-container p-6 w-full max-w-md space-y-4">
+        <h2 class="text-xl font-bold">Manage Cardballs</h2>
+        <div id="modal-card-list" class="space-y-2 max-h-60 overflow-y-auto p-2"></div>
+        <div>
+          <select id="add-card-select" class="pixel-input w-full p-2"></select>
+          <button id="add-card-btn" class="pixel-button w-full mt-2 bg-transparent text-white py-2">Add Card</button>
+        </div>
+        <button id="close-modal-btn" class="pixel-button w-full mt-4 bg-transparent text-white py-2">Done</button>
+      </div>
+    </div>
+
+    <script type="module" src="js/main.js"></script>
+</body>
 </html>
