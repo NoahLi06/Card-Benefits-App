@@ -12,10 +12,14 @@ const initMap = (lat, lon, mapElement) => {
   }
   
   map = L.map(mapElement).setView([lat, lon], 16);
+
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 19,
+    maxZoom: 16,
+    // necessary for copyright :P
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
   }).addTo(map);
   userMarker = L.marker([lat, lon]).addTo(map).bindPopup("You are here!");
+  map.invalidateSize();
 };
 
 // From your teammate: Cleaner location logic with callbacks
