@@ -1,8 +1,8 @@
 // js/main.js
 
-import * as Wallet from './wallet-service.js';
-import * as Map from './map-service.js';
-import * as Game from './game-logic.js';
+import * as Wallet from './js/wallet-services.js';
+import * as Map from './js/map-service.js';
+import * as Game from './js/game-mechanics.js';
 
 // --- DOM ELEMENTS ---
 const mapElement = document.getElementById("map");
