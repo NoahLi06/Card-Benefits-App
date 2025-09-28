@@ -93,35 +93,62 @@
       <div id="map-container" class="pixel-border p-1">
         <div id="map" class="h-64"></div>
       </div>
-      <div id="location-info-area" class="hidden text-center pixel-border p-4 space-y-2">
+      <div
+        id="location-info-area"
+        class="hidden text-center pixel-border p-4 space-y-2"
+      >
         <p>Location Found:</p>
         <p id="location-name" class="text-lg"></p>
       </div>
-      <button id="capture-deal-btn" class="pixel-button w-full bg-transparent text-white font-semibold py-3">
+      <button
+        id="capture-deal-btn"
+        class="pixel-button w-full bg-transparent text-white font-semibold py-3"
+      >
         Capture Deal
       </button>
-      <div id="error-message" class="hidden text-center pixel-border p-4 text-red-400"></div>
+      <div
+        id="error-message"
+        class="hidden text-center pixel-border p-4 text-red-400"
+      ></div>
       <div>
         <div class="flex justify-between items-center mb-2">
-            <h2 class="text-lg">Cardballs</h2>
-            <button id="manage-wallet-btn" class="text-sm underline">Manage</button>
+          <h2 class="text-lg">Cardballs</h2>
+          <button id="manage-wallet-btn" class="text-sm underline">
+            Manage
+          </button>
         </div>
         <div id="wallet-cards" class="space-y-2"></div>
       </div>
     </div>
 
-    <div id="wallet-modal" class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4">
+    <div
+      id="wallet-modal"
+      class="hidden fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4"
+    >
       <div class="game-container p-6 w-full max-w-md space-y-4">
         <h2 class="text-xl font-bold">Manage Cardballs</h2>
-        <div id="modal-card-list" class="space-y-2 max-h-60 overflow-y-auto p-2"></div>
+        <div
+          id="modal-card-list"
+          class="space-y-2 max-h-60 overflow-y-auto p-2"
+        ></div>
         <div>
           <select id="add-card-select" class="pixel-input w-full p-2"></select>
-          <button id="add-card-btn" class="pixel-button w-full mt-2 bg-transparent text-white py-2">Add Card</button>
+          <button
+            id="add-card-btn"
+            class="pixel-button w-full mt-2 bg-transparent text-white py-2"
+          >
+            Add Card
+          </button>
         </div>
-        <button id="close-modal-btn" class="pixel-button w-full mt-4 bg-transparent text-white py-2">Done</button>
+        <button
+          id="close-modal-btn"
+          class="pixel-button w-full mt-4 bg-transparent text-white py-2"
+        >
+          Done
+        </button>
       </div>
     </div>
 
     <script type="module" src="js/main.js"></script>
-</body>
+  </body>
 </html>
