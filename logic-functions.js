@@ -77,16 +77,17 @@ const handleCaptureDeal = async () => {
     captureDealBtn.textContent = "Analyzing...";
 
     try {
-        const placeName = await Map.fetchBusinessAtLocation();
+        const {name: placeName, category: placeCategory} = await Map.fetchBusinessAtLocation();
         locationNameEl.textContent = placeName;
         locationInfoArea.classList.remove('hidden');
 
         // Now we can implement the "Bonus Roll" logic here!
         // For now, let's just show the best card.
-        const { businessCategory, bestCard } = Game.determineBestCard(placeName, Wallet.getUserCards(), Wallet.ALL_CARDS_DATABASE);
-        
+        const bestCard = Game.determineBestCard(placeCategory, Wallet.getUserCards(), Wallet.ALL_CARDS_DATABASE);
+
+        let categoryPretty = placeCategory.charAt(0).toUpperCase() + placeCategory.slice(1);
         // This is where you would show the result to the user, perhaps in another modal.
-        alert(`You're at ${placeName} (Dining).\nBest Cardball: ${bestCard.name} for ${bestCard.reward}% back!`);
+        alert(`You're at ${placeName} (${categoryPretty}).\nBest Cardball: ${bestCard.name} for ${bestCard.reward}% back!`);
 
     } catch (error) {
         showError(error.message);
