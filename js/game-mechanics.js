@@ -1,16 +1,22 @@
 // js/game-logic.js
 
+// Example
 const BUSINESS_TO_CATEGORY_MAP = {
-  starbucks: "dining", "mcdonald's": "dining",
-  "whole foods": "groceries", kroger: "groceries", "trader joe's": "groceries", meijer: "groceries",
-  shell: "gas", exxon: "gas",
+  starbucks: "dining",
+  "mcdonald's": "dining",
+  "whole foods": "groceries",
+  kroger: "groceries",
+  "trader joe's": "groceries",
+  meijer: "groceries",
+  shell: "gas",
+  exxon: "gas",
   marriott: "travel",
   "amc theatres": "entertainment",
 };
 
 const determineBestCard = (placeName, userCards, allCards) => {
   const lowerPlaceName = placeName.toLowerCase();
-  
+
   // Find the category for the business
   let category = "default";
   for (const [key, value] of Object.entries(BUSINESS_TO_CATEGORY_MAP)) {

@@ -61,6 +61,7 @@ const ALL_CARDS_DATABASE = {
     name: "Wells Fargo Visa Signature",
     rewards: { default: 1.5 },
   },
+  "apple-card": { name: "Apple Card", rewards: { default: 1 } },
 };
 
 let userCards = []; // This is the user's current wallet
@@ -74,7 +75,7 @@ const loadCards = () => {
     userCards = JSON.parse(saved);
   } else {
     // Give the user some default cards to start
-    userCards = ["chase-sapphire-preferred", "amex-blue-cash-everyday"];
+    userCards = ["chase-freedom-unlimited", "amex-blue-cash-everyday"];
     saveCards();
   }
 };
